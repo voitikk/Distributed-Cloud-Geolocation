@@ -1,0 +1,24 @@
+Colaboration Log:
+
+Alex Voitik
+Project 2 Checkpoint
+
+I have spent 6-7 hours on this project so far. I have code in my pinger.py file,
+as well as my central.py file. The code is not complete, but I have a plan for 
+completion in the next week. I have read over the project specification, and I 
+now fully understand what is needed to complete this project. I would like to 
+implement some of the extra credit to earn a few points, but only after I am 100%
+sure that my code works properly. I have also begun the process of using the 
+EC2 and GCE machines.
+
+I was not able to begin working diligently on this project due to the lack of
+internet I had while in Los Angeles. The hotels we stayed at were charging $20
+a day for use of the internet, so it was hard to get started. I worked mainly on this
+today, and a little bit on the red-eye we took Sunday/Monday morning. 
+
+Once again, I do plan on working very hard on this for the next week and I will
+complete it, even if it means there will be a lot more work for me to do.
+
+
+As far as code is concerned, I only used the webserver code you emailed us from the last project, as well as my own copy of the project. I also used the python documentation found online.
+
