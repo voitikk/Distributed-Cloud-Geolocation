@@ -1,62 +1,57 @@
 # Alex Voitik
 # pinger.py
-# last edit : 3/22 11:01am
+# last edit : 3/22
 
 import time
 import socket
-import sys
+import random
+
 
 # Opens a connection to the central server, receives data
-def connect_to_central(my_dns_name, my_region, central_host, central_port):
+def run_pinger_server(my_dns_name, my_ipaddr, my_region, central_host, central_port):
+
+    # Open socket to central
+    print 'Opening socket to central from pinger'
     central_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    msg_to_central = 'helloalex%s %s located in region %s' % (central_host, my_dns_name, my_region)
-    central_sock.connect((central_host, central_port))
-    print 'Pinger connected to central'
-    central_sock.send(msg_to_central)
-    url_connect = central_sock.recv(4096)
-    central_sock.close()
-    print 'Socket to central closed'
-    return url_connect
+    msg_to_central = 'helloalex%s %s located in %s region' % (my_ipaddr, my_dns_name, my_region)
 
-
-def parse_url(url):
-    if url[0:7] == 'http://'
+    # Attempt to connect to the host
+    while 1:
         try:
-            url_name = url.split('http://')
-            url_name = url_name[1]
-            url_name, url_port = url_name.split(':')
-            return url_name, url_port
-        except:
-            print "Problem parsing URL passed to pinger server", sys.exc_info()[0]
-            sys.exit(1)
-    else:
-        return url
+            central_sock.connect((central_host, central_port))
+            print 'Pinger connected to central'
+            central_sock.send(msg_to_central)
+            break
+        except Exception as e:
+            # If failed, try again in 2 seconds
+            time.sleep(2)
 
+    while 1:
+        target_url = central_sock.recv(4096)
 
-def fetch_given_url(url_target):
+        # Take out the http:// in the url string
+        if target_url[0:7] == 'http://':
+            target_url = target_url[7:]
 
-    url_path, url_port = parse_url(url_target)
+        collection_of_rtt_times = []
 
-    pinger_count = 1
-    #connects to path, records time to receive 1 byte of data
-    print 'URL parsed'
-    ping_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print 'Socket from pinger server has been created'
-    ping_socket.connect((url_path, 80))
-    start_time = time.time()
-    print 'clock is ticking...'
-    ping_socket.send('GET %s/index HTTP/1.1\n\n' % url_path)
-    data = ping_socket.recv(1)
-    end_time = time.time()
-    print 'received one bit, clock has stopped'
-    final_time = end_time - start_time
-    final_time = final_time * 1000
-    print 'Found', url_path, 'in', final_time, 'ms'
-    ping_socket.close()
+        for rtt_ct in range(6):
+            # connects to path, records time to receive 1 byte of data
+            ping_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print 'Socket from pinger server has been created'
+            ping_socket.connect((target_url, 80))
+            start_time = time.time()
+            print 'clock is ticking...'
+            ping_socket.send('GET %s/index.html HTTP/1.1\n\n' % target_url)
+            data = ping_socket.recv(1)
+            end_time = time.time()
+            print 'received one bit, clock has stopped'
+            final_time = end_time - start_time
+            print 'Found', target_url, 'in', final_time, 'ms'
+            collection_of_rtt_times.append(final_time)
+            time.sleep(random.uniform(0.25, 1.0))
 
-    
-def run_pinger_server(my_dns_name, my_region, central_host, central_port):
-    #Open connection to central
-    url_connect = connect_to_central(my_dns_name, my_region, central_host, central_port)
-
-    fetch_given_url(url_connect)
+        # Find the minimum RTT from the list
+        minimum_rtt = min(collection_of_rtt_times)
+        central_information = 'URL: %s / Location: %s / RTT Time: %s' % (target_url, my_region, minimum_rtt)
+        central_sock.send(central_information)

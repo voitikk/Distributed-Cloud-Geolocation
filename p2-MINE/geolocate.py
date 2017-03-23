@@ -48,4 +48,4 @@ else:
     print "Starting pinger within region %s (city: %s, coordinates: %s)" % (
             my_region, cloud.region_cities[my_region], cloud.region_coords[my_region])
     from pinger import *
-    run_pinger_server(my_dns_name, my_region, central_host, central_port)
+    run_pinger_server(my_dns_name, my_ipaddr, my_region, central_host, central_port)
